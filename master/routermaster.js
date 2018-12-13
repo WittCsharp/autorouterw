@@ -39,16 +39,16 @@ class RouterMaster {
       let err = null;
       Object.keys(schema).map((k) => {
         if (req.body[k]) {
-          if (!schema[k].type) return;
-          req.body[k] = schema[k].type(req.body[k]);
+          if (!Array.isArray(req.body[k]) && schema[k].type === Array) {
+            req.body[k] = schema[k].type(req.body[k]);
+          }
+
+          if (schema[k].type != Array) {
+            req.body[k] = schema[k].type(req.body[k]); 
+          }
+          
           if (isNaN(req.body[k]) && typeof(req.body[k]) === 'number') {
             err = new Error(`The ${k} type is fail!!!`);
-            err.code = 403;
-          }
-        }
-        if (schema[k].notnull) {
-          if (!req.body[k]) {
-            err = new Error(`${k} not fount`);
             err.code = 403;
           }
         }
